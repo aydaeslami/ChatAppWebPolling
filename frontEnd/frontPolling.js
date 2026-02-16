@@ -19,13 +19,13 @@ if (!user) {
           alert("Please enter message");
     return;
     }
-  const res = await fetch("http://localhost:8080/", {
+  const res = await fetch("/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       
-      user: userBox.value,
-      text: postBox.value,
+      user: user,
+      text: message,
     }),
   });
 
@@ -37,9 +37,7 @@ postBtn.addEventListener("click", sendData);
 // LONG POLL
 async function longPoll() {
   try {
-    const res = await fetch(
-      `http://localhost:8080/loadData?since=${lastSeenId}`
-    );
+    const res = await fetch(`/loadData?since=${lastSeenId}`);
 
     const messages = await res.json();
 

@@ -6,7 +6,10 @@ const userBoxWeb = document.getElementById("userInput");
 // =======================
 // LOCAL WS CONNECTION
 // =======================
-const socket = new WebSocket("ws://localhost:8080");
+const protocol = location.protocol === "https:" ? "wss" : "ws";
+const socket = new WebSocket(`${protocol}://${location.host}`);
+
+
 
 // =======================
 // SEND MESSAGE
