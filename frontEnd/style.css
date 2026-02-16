@@ -1,0 +1,126 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.app {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+h2 {
+    text-align: center;
+}
+
+.mode-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.mode-buttons button {
+    width: 48%;
+    background: #e3e8ff;
+    border: none;
+    padding: 6px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.mode-buttons button:hover {
+    background: #cdd6ff;
+}
+
+.chat {
+    width: 300px;
+}
+
+.messages {
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background: #fafafa;
+}
+
+.message {
+    margin-bottom: 5px;
+    background: #e3e8ff;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.send-btn {
+    width: 100%;
+    background: #6c8cff;
+    color: white;
+    border: none;
+    padding: 6px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.send-btn:hover {
+    background: #5874e0;
+}
+
+
+.subtitle {
+    color: #777;
+    margin-bottom: 20px;
+}
+
+.mode-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.card {
+    display: block;
+    text-decoration: none;
+    background: #f0f3ff;
+    padding: 15px;
+    border-radius: 8px;
+    color: black;
+    transition: 0.2s;
+    border: 1px solid #d0d8ff;
+}
+
+.card:hover {
+    background: #e0e6ff;
+    transform: scale(1.02);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+    margin: 0;
+}
+
+.card p {
+    margin: 5px 0 0;
+    font-size: 13px;
+    color: #555;
+}
