@@ -52,13 +52,12 @@ app.use(express.static("../frontEnd"));
 app.post("/", (req, res) => {
   const newMessage = {
     id: nextId++,
-    user: req.body.userName,
-    text: req.body.boxValue,
+    user: req.body.user,
+    text: req.body.text,
     likes: 0,
     dislikes: 0,
     timeMsg: Date.now(),
   };
-
   msgVar.push(newMessage);
 
   // answer waiting polling requests
