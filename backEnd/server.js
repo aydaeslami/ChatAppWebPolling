@@ -45,7 +45,7 @@ app.use(cors());
 app.use(express.json());
 
 // serve frontend files
-app.use(express.static("../frontEnd"));
+app.use(express.static("frontEnd"));
 
 // add message (HTTP)
 
@@ -94,6 +94,9 @@ app.post("/delete", (req, res) => {
 
   res.json({ message: "Message deleted" });
 });
+
+
+
 
 // long polling
 
