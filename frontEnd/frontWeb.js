@@ -15,7 +15,17 @@ postBtnWeb.addEventListener("click", () => {
   const user = userBoxWeb.value.trim();
   const message = postBoxWeb.value.trim();
 
-  if (!user || !message) return;
+
+
+     // check empty
+    if (!user) {
+        alert("Please enter name");
+        return;
+        }
+        else if(!message){
+              alert("Please enter message");
+        return;
+        }
 
   const msgData = {
     type: "SEND_MESSAGE",
