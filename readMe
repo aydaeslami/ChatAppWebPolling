@@ -1,0 +1,34 @@
+# 💬 Chat App (Polling & WebSocket)
+
+This is a simple real-time chat application that supports two communication methods:
+
+- **Polling**
+- **WebSocket**
+
+Users can switch between both modes to compare traditional request-based messaging with real-time communication.
+
+---
+
+## 🚀 Features
+
+- Send and receive messages
+- Choose between Polling or WebSocket mode
+- Real-time updates with WebSocket
+- Interval-based updates with Polling
+- Simple frontend interface
+- Deployable on Coolify
+
+---
+
+## 🛠️ How It Works
+
+### Polling Mode
+The client sends HTTP requests to the server at regular intervals to check for new messages.
+
+### WebSocket Mode
+The client maintains a persistent connection with the server, allowing instant bidirectional communication.
+
+---
+
+## 📁 Project Structure
+
