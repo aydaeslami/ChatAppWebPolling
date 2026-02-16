@@ -7,7 +7,18 @@ let lastSeenId = 0;
 
 // SEND
 async function sendData() {
+     const user = userBox.value.trim();
+     const message = postBox.value.trim();
 
+     // check empty
+if (!user) {
+    alert("Please enter name");
+    return;
+     }
+    else if(!message){
+          alert("Please enter message");
+    return;
+    }
   const res = await fetch("http://localhost:8080/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
