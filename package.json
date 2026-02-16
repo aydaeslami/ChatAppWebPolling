@@ -1,0 +1,26 @@
+{
+  "name": "chatappwebpolling",
+  "version": "1.0.0",
+  "description": "This is a simple real-time chat application that supports two communication methods:",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aydaeslami/ChatAppWebPolling.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/aydaeslami/ChatAppWebPolling/issues"
+  },
+  "homepage": "https://github.com/aydaeslami/ChatAppWebPolling#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "websocket": "^1.0.35"
+  }
+}
