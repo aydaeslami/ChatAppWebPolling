@@ -6,9 +6,9 @@ const userBoxWeb = document.getElementById("userInput");
 // =======================
 // LOCAL WS CONNECTION
 // =======================
-const protocol = location.protocol === "https:" ? "wss" : "ws";
-const socket = new WebSocket(`${protocol}://${location.host}`);
-
+const socket = new WebSocket(
+  "wss://chatapp-backend.hosting.codeyourfuture.io"
+);
 
 
 // =======================
