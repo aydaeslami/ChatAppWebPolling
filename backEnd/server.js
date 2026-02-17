@@ -111,16 +111,43 @@ app.post("/delete", (req, res) => {
 
 // long polling
 
+// app.get("/loadData", (req, res) => {
+//   const since = Number(req.query.since ?? 0);
+//   const newMessages = msgVar.filter((msg) => msg.id > since);
+
+//   if (newMessages.length > 0) {
+//     res.json(newMessages);
+//   } else {
+//     waitingRequests.push({ since, res });
+//   }
+// });
+
+
 app.get("/loadData", (req, res) => {
   const since = Number(req.query.since ?? 0);
   const newMessages = msgVar.filter((msg) => msg.id > since);
 
   if (newMessages.length > 0) {
-    res.json(newMessages);
-  } else {
-    waitingRequests.push({ since, res });
+    return res.json(newMessages);
   }
+
+  const waiting = { since, res };
+
+  waiting.timeout = setTimeout(() => {
+    res.json([]);
+    const i = waitingRequests.indexOf(waiting);
+    if (i !== -1) waitingRequests.splice(i, 1);
+  }, 25000);
+
+  waitingRequests.push(waiting);
+
+  req.on("close", () => {
+    clearTimeout(waiting.timeout);
+    const i = waitingRequests.indexOf(waiting);
+    if (i !== -1) waitingRequests.splice(i, 1);
+  });
 });
+
 
 // websocket connection
 
