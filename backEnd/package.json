@@ -21,6 +21,7 @@
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "websocket": "^1.0.35"
+    "websocket": "^1.0.35",
+    "ws": "^8.19.0"
   }
 }

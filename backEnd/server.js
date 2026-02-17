@@ -1,29 +1,24 @@
 import express from "express";
 import cors from "cors";
 import http from "http";
-// import { server as WebSocketServer } from "websocket";
+import { WebSocketServer } from "ws";
 
 const app = express();
 const server = http.createServer(app);
-// const webSocketServer = new WebSocketServer({ httpServer: server });
 
 // start server
 const PORT = process.env.PORT || 8080;
-
-// server.listen(PORT, () => {
-//   console.log("Server running on port " + PORT);
-// });
-
 
 server.listen(PORT, "0.0.0.0", () => {
   console.log("Server running on port " + PORT);
 });
 
-
-// app data
+// =======================
+// App Data
+// =======================
 
 const waitingRequests = [];
-// const connections = [];
+const connections = [];
 
 let msgVar = [
   {
@@ -44,21 +39,27 @@ let msgVar = [
   },
 ];
 
-// next message id
 let nextId = msgVar.length + 1;
 
-// middlewares
+// =======================
+// Middlewares
+// =======================
 
 app.use(cors());
 app.use(express.json());
 
-// serve frontend files
+// =======================
+// Serve Frontend Files
+// =======================
+
 app.use(express.static("frontEnd"));
 app.get("/", (req, res) => {
   res.sendFile("index.html", { root: "frontEnd" });
 });
 
-// add message (HTTP)
+// =======================
+// Add Message (HTTP)
+// =======================
 
 app.post("/", (req, res) => {
   const newMessage = {
@@ -69,6 +70,7 @@ app.post("/", (req, res) => {
     dislikes: 0,
     timeMsg: Date.now(),
   };
+
   msgVar.push(newMessage);
 
   // answer waiting polling requests
@@ -81,47 +83,21 @@ app.post("/", (req, res) => {
   }
 
   // send to websocket users
-  // connections.forEach((conn) => {
-  //   conn.sendUTF(
-  //     JSON.stringify({
-  //       type: "NEW_MESSAGE",
-  //       payload: newMessage,
-  //     })
-  //   );
-  // });
+  connections.forEach((conn) => {
+    conn.send(
+      JSON.stringify({
+        type: "NEW_MESSAGE",
+        payload: newMessage,
+      })
+    );
+  });
 
   res.json(newMessage);
 });
 
-// delete message
-
-app.post("/delete", (req, res) => {
-  const idToDelete = req.body.id;
-  const index = msgVar.findIndex((msg) => msg.id === idToDelete);
-
-  if (index !== -1) {
-    msgVar.splice(index, 1);
-  }
-
-  res.json({ message: "Message deleted" });
-});
-
-
-
-
-// long polling
-
-// app.get("/loadData", (req, res) => {
-//   const since = Number(req.query.since ?? 0);
-//   const newMessages = msgVar.filter((msg) => msg.id > since);
-
-//   if (newMessages.length > 0) {
-//     res.json(newMessages);
-//   } else {
-//     waitingRequests.push({ since, res });
-//   }
-// });
-
+// =======================
+// Long Polling
+// =======================
 
 app.get("/loadData", (req, res) => {
   const since = Number(req.query.since ?? 0);
@@ -148,97 +124,94 @@ app.get("/loadData", (req, res) => {
   });
 });
 
+// =======================
+// WebSocket Server
+// =======================
 
-// websocket connection
+const wss = new WebSocketServer({ server });
 
-// webSocketServer.on("request", (req) => {
-//   const connection = req.accept(null, req.origin);
-//   connections.push(connection);
-//   console.log("WebSocket connected");
+wss.on("connection", (connection) => {
+  console.log("WebSocket connected");
 
-//   connection.on("message", handleWebSocketMessage);
+  connections.push(connection);
 
-//   connection.on("close", () => {
-//     const index = connections.indexOf(connection);
-//     if (index !== -1) connections.splice(index, 1);
-//     console.log("WebSocket disconnected");
-//   });
-// });
+  connection.on("message", (message) => {
+    let data;
+    try {
+      data = JSON.parse(message.toString());
+    } catch {
+      return;
+    }
 
-// websocket messages
+    if (!data.type) return;
 
-// function handleWebSocketMessage(msg) {
-//   if (msg.type !== "utf8") return;
+    switch (data.type) {
+      case "SEND_MESSAGE": {
+        const { user, text } = data.payload || {};
+        if (!user || !text) return;
 
-//   let data;
-//   try {
-//     data = JSON.parse(msg.utf8Data);
-//   } catch {
-//     return;
-//   }
+        const newMessage = {
+          id: nextId++,
+          user,
+          text,
+          likes: 0,
+          dislikes: 0,
+          timeMsg: Date.now(),
+        };
 
-//   if (!data.type) return;
+        msgVar.push(newMessage);
 
-//   switch (data.type) {
-//     case "SEND_MESSAGE": {
-//       const { user, text } = data.payload || {};
-//       if (!user || !text) return;
+        connections.forEach((conn) => {
+          conn.send(
+            JSON.stringify({
+              type: "NEW_MESSAGE",
+              payload: newMessage,
+            })
+          );
+        });
 
-//       const newMessage = {
-//         id: nextId++,
-//         user,
-//         text,
-//         likes: 0,
-//         dislikes: 0,
-//         timeMsg: Date.now(),
-//       };
+        break;
+      }
 
-//       msgVar.push(newMessage);
+      case "REACTION_ADD": {
+        const { messageId, reaction } = data.payload || {};
+        if (!messageId || !reaction) return;
 
-//       connections.forEach((conn) => {
-//         conn.sendUTF(
-//           JSON.stringify({
-//             type: "NEW_MESSAGE",
-//             payload: newMessage,
-//           })
-//         );
-//       });
+        const messageItem = msgVar.find((m) => m.id === messageId);
+        if (!messageItem) return;
 
-//       break;
-//     }
+        if (reaction === "LIKE") {
+          messageItem.likes++;
+        } else if (reaction === "DISLIKE") {
+          messageItem.dislikes++;
+        } else {
+          return;
+        }
 
-//     case "REACTION_ADD": {
-//       const { messageId, reaction } = data.payload || {};
-//       if (!messageId || !reaction) return;
+        connections.forEach((conn) => {
+          conn.send(
+            JSON.stringify({
+              type: "REACTION_UPDATED",
+              payload: {
+                messageId: messageItem.id,
+                likes: messageItem.likes,
+                dislikes: messageItem.dislikes,
+              },
+            })
+          );
+        });
 
-//       const message = msgVar.find((m) => m.id === messageId);
-//       if (!message) return;
+        break;
+      }
 
-//       if (reaction === "LIKE") {
-//         message.likes++;
-//       } else if (reaction === "DISLIKE") {
-//         message.dislikes++;
-//       } else {
-//         return;
-//       }
+      default:
+        break;
+    }
+  });
 
-//       connections.forEach((conn) => {
-//         conn.sendUTF(
-//           JSON.stringify({
-//             type: "REACTION_UPDATED",
-//             payload: {
-//               messageId: message.id,
-//               likes: message.likes,
-//               dislikes: message.dislikes,
-//             },
-//           })
-//         );
-//       });
-
-//       break;
-//     }
-
-//     default:
-//       break;
-//   }
-// }
+  connection.on("close", () => {
+    const index = connections.indexOf(connection);
+    if (index !== -1) connections.splice(index, 1);
+    console.log("WebSocket disconnected");
+  });
+});
