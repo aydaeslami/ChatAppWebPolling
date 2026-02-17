@@ -10,6 +10,9 @@ const webSocketServer = new WebSocketServer({ httpServer: server });
 // start server
 const PORT = process.env.PORT || 8080;
 
+// server.listen(PORT, () => {
+//   console.log("Server running on port " + PORT);
+// });
 
 
 server.listen(PORT, "0.0.0.0", () => {
@@ -51,6 +54,9 @@ app.use(express.json());
 
 // serve frontend files
 app.use(express.static("frontEnd"));
+app.get("/", (req, res) => {
+  res.sendFile("index.html", { root: "frontEnd" });
+});
 
 // add message (HTTP)
 
