@@ -2,6 +2,7 @@ const postBtn = document.getElementById("sendButton");
 const postBox = document.getElementById("messageInput");
 const box = document.getElementById("messagesContainer");
 const userBox = document.getElementById("userInput");
+const backendURL = "https://chatapp-backend.hosting.codeyourfuture.io";
 
 let lastSeenId = 0;
 
@@ -19,7 +20,8 @@ if (!user) {
           alert("Please enter message");
     return;
     }
-  const res = await fetch("/", {
+  const res = await fetch(`${backendURL}/`, {
+
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -37,7 +39,7 @@ postBtn.addEventListener("click", sendData);
 // LONG POLL
 async function longPoll() {
   try {
-    const res = await fetch(`/loadData?since=${lastSeenId}`);
+const res = await fetch(`${backendURL}/loadData?since=${lastSeenId}`);
 
     const messages = await res.json();
 
@@ -52,7 +54,7 @@ async function longPoll() {
     console.error("Polling error:", err);
   }
 // prevent overlapping
-  setTimeout(longPoll, 1000);
+  setTimeout(longPoll, 500);
 }
 
 longPoll();
