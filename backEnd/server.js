@@ -1,11 +1,11 @@
 import express from "express";
 import cors from "cors";
 import http from "http";
-import { server as WebSocketServer } from "websocket";
+// import { server as WebSocketServer } from "websocket";
 
 const app = express();
 const server = http.createServer(app);
-const webSocketServer = new WebSocketServer({ httpServer: server });
+// const webSocketServer = new WebSocketServer({ httpServer: server });
 
 // start server
 const PORT = process.env.PORT || 8080;
@@ -23,7 +23,7 @@ server.listen(PORT, "0.0.0.0", () => {
 // app data
 
 const waitingRequests = [];
-const connections = [];
+// const connections = [];
 
 let msgVar = [
   {
@@ -81,14 +81,14 @@ app.post("/", (req, res) => {
   }
 
   // send to websocket users
-  connections.forEach((conn) => {
-    conn.sendUTF(
-      JSON.stringify({
-        type: "NEW_MESSAGE",
-        payload: newMessage,
-      })
-    );
-  });
+  // connections.forEach((conn) => {
+  //   conn.sendUTF(
+  //     JSON.stringify({
+  //       type: "NEW_MESSAGE",
+  //       payload: newMessage,
+  //     })
+  //   );
+  // });
 
   res.json(newMessage);
 });
@@ -124,94 +124,94 @@ app.get("/loadData", (req, res) => {
 
 // websocket connection
 
-webSocketServer.on("request", (req) => {
-  const connection = req.accept(null, req.origin);
-  connections.push(connection);
-  console.log("WebSocket connected");
+// webSocketServer.on("request", (req) => {
+//   const connection = req.accept(null, req.origin);
+//   connections.push(connection);
+//   console.log("WebSocket connected");
 
-  connection.on("message", handleWebSocketMessage);
+//   connection.on("message", handleWebSocketMessage);
 
-  connection.on("close", () => {
-    const index = connections.indexOf(connection);
-    if (index !== -1) connections.splice(index, 1);
-    console.log("WebSocket disconnected");
-  });
-});
+//   connection.on("close", () => {
+//     const index = connections.indexOf(connection);
+//     if (index !== -1) connections.splice(index, 1);
+//     console.log("WebSocket disconnected");
+//   });
+// });
 
 // websocket messages
 
-function handleWebSocketMessage(msg) {
-  if (msg.type !== "utf8") return;
+// function handleWebSocketMessage(msg) {
+//   if (msg.type !== "utf8") return;
 
-  let data;
-  try {
-    data = JSON.parse(msg.utf8Data);
-  } catch {
-    return;
-  }
+//   let data;
+//   try {
+//     data = JSON.parse(msg.utf8Data);
+//   } catch {
+//     return;
+//   }
 
-  if (!data.type) return;
+//   if (!data.type) return;
 
-  switch (data.type) {
-    case "SEND_MESSAGE": {
-      const { user, text } = data.payload || {};
-      if (!user || !text) return;
+//   switch (data.type) {
+//     case "SEND_MESSAGE": {
+//       const { user, text } = data.payload || {};
+//       if (!user || !text) return;
 
-      const newMessage = {
-        id: nextId++,
-        user,
-        text,
-        likes: 0,
-        dislikes: 0,
-        timeMsg: Date.now(),
-      };
+//       const newMessage = {
+//         id: nextId++,
+//         user,
+//         text,
+//         likes: 0,
+//         dislikes: 0,
+//         timeMsg: Date.now(),
+//       };
 
-      msgVar.push(newMessage);
+//       msgVar.push(newMessage);
 
-      connections.forEach((conn) => {
-        conn.sendUTF(
-          JSON.stringify({
-            type: "NEW_MESSAGE",
-            payload: newMessage,
-          })
-        );
-      });
+//       connections.forEach((conn) => {
+//         conn.sendUTF(
+//           JSON.stringify({
+//             type: "NEW_MESSAGE",
+//             payload: newMessage,
+//           })
+//         );
+//       });
 
-      break;
-    }
+//       break;
+//     }
 
-    case "REACTION_ADD": {
-      const { messageId, reaction } = data.payload || {};
-      if (!messageId || !reaction) return;
+//     case "REACTION_ADD": {
+//       const { messageId, reaction } = data.payload || {};
+//       if (!messageId || !reaction) return;
 
-      const message = msgVar.find((m) => m.id === messageId);
-      if (!message) return;
+//       const message = msgVar.find((m) => m.id === messageId);
+//       if (!message) return;
 
-      if (reaction === "LIKE") {
-        message.likes++;
-      } else if (reaction === "DISLIKE") {
-        message.dislikes++;
-      } else {
-        return;
-      }
+//       if (reaction === "LIKE") {
+//         message.likes++;
+//       } else if (reaction === "DISLIKE") {
+//         message.dislikes++;
+//       } else {
+//         return;
+//       }
 
-      connections.forEach((conn) => {
-        conn.sendUTF(
-          JSON.stringify({
-            type: "REACTION_UPDATED",
-            payload: {
-              messageId: message.id,
-              likes: message.likes,
-              dislikes: message.dislikes,
-            },
-          })
-        );
-      });
+//       connections.forEach((conn) => {
+//         conn.sendUTF(
+//           JSON.stringify({
+//             type: "REACTION_UPDATED",
+//             payload: {
+//               messageId: message.id,
+//               likes: message.likes,
+//               dislikes: message.dislikes,
+//             },
+//           })
+//         );
+//       });
 
-      break;
-    }
+//       break;
+//     }
 
-    default:
-      break;
-  }
-}
+//     default:
+//       break;
+//   }
+// }
