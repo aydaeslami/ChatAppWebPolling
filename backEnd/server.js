@@ -52,10 +52,11 @@ app.use(express.json());
 // Serve Frontend Files
 // =======================
 
-app.use(express.static("frontEnd"));
+app.use(express.static("../frontEnd"));
 app.get("/", (req, res) => {
-  res.sendFile("index.html", { root: "frontEnd" });
+  res.sendFile("../frontEnd/index.html");
 });
+
 
 // =======================
 // Add Message (HTTP)
