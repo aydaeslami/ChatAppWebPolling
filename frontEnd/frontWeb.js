@@ -6,11 +6,17 @@ const userBoxWeb = document.getElementById("userInput");
 // =======================
 // LOCAL WS CONNECTION
 // =======================
-const socket = new WebSocket(
-  "wss://chatapp-backend.hosting.codeyourfuture.io"
-);
 
 
+const isLocal =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1";
+
+const wsUrl = isLocal
+  ? "ws://localhost:8080"
+  : "wss://chatapp-backend.hosting.codeyourfuture.io";
+
+const socket = new WebSocket(wsUrl);
 // =======================
 // SEND MESSAGE
 // =======================
@@ -48,8 +54,13 @@ postBtnWeb.addEventListener("click", () => {
 // RECEIVE MESSAGE
 // =======================
 socket.onmessage = (event) => {
-  const data = JSON.parse(event.data);
 
+  const data = JSON.parse(event.data);
+  if (data.type === "WELCOME") {
+    const msg = data.payload;
+    console.log(msg)
+
+  }
   if (data.type === "NEW_MESSAGE") {
     const msg = data.payload;
 

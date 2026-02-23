@@ -132,11 +132,35 @@ app.get("/loadData", (req, res) => {
 const wss = new WebSocketServer({ server });
 
 wss.on("connection", (connection) => {
-  console.log("WebSocket connected");
+      
+ // First load
+ 
+    msgVar.forEach((chatMessage) => {
+       connection.send(
+    JSON.stringify({
+      type: "NEW_MESSAGE",
+      payload: {
+            id: chatMessage.id,
+            user: chatMessage.user,
+            text: chatMessage.text,
+            likes: chatMessage.likes,
+            dislikes: chatMessage.dislikes,
+            timeMsg: chatMessage.timeMsg
+          }
+      })
+    )
+    })
+  
 
+
+    
   connections.push(connection);
 
+
   connection.on("message", (message) => {
+    console.log("WebSocket connected");
+
+
     let data;
     try {
       data = JSON.parse(message.toString());
