@@ -132,7 +132,7 @@ app.get("/loadData", (req, res) => {
 const wss = new WebSocketServer({ server });
 
 wss.on("connection", (connection) => {
-      
+   
  // First load
  
     msgVar.forEach((chatMessage) => {

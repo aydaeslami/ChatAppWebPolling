@@ -2,7 +2,12 @@ const postBtn = document.getElementById("sendButton");
 const postBox = document.getElementById("messageInput");
 const box = document.getElementById("messagesContainer");
 const userBox = document.getElementById("userInput");
-const backendURL = "https://chatapp-backend.hosting.codeyourfuture.io";
+const isLocal =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1";
+const backendURL = isLocal
+  ? "http://localhost:8080"
+  : "https://chatapp-backend.hosting.codeyourfuture.io";
 
 let lastSeenId = 0;
 
@@ -32,6 +37,8 @@ if (!user) {
   });
 
   postBox.value = "";
+  userBox.value="";
+
 }
 
 postBtn.addEventListener("click", sendData);
@@ -57,4 +64,16 @@ const res = await fetch(`${backendURL}/loadData?since=${lastSeenId}`);
   setTimeout(longPoll, 500);
 }
 
-longPoll();
+async function loadInitialMessages() {
+  const res = await fetch(`${backendURL}/loadData?since=0`);
+  const messages = await res.json();
+
+  box.innerHTML = "";
+
+  messages.forEach((msg) => {
+    box.innerHTML += `<div class="message">${msg.user}: ${msg.text}</div>`;
+    lastSeenId = msg.id;
+  });
+}
+
+longPoll()

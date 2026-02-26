@@ -7,10 +7,13 @@ const userBoxWeb = document.getElementById("userInput");
 // LOCAL WS CONNECTION
 // =======================
 
-
 const isLocal =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1";
+
+const backendURL = isLocal
+  ? "http://localhost:8080"
+  : "https://chatapp-backend.hosting.codeyourfuture.io";
 
 const wsUrl = isLocal
   ? "ws://localhost:8080"
