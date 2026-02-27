@@ -158,7 +158,7 @@ wss.on("connection", (connection) => {
 
 
   connection.on("message", (message) => {
-    console.log("WebSocket connected");
+    console.log("Message received from client");
 
 
     let data;
